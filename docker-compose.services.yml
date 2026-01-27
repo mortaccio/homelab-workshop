@@ -1,0 +1,132 @@
+# Optional: Self-hosted services examples
+# Run with: docker compose -f docker-compose.yml -f docker-compose.services.yml up -d
+# This file contains working examples of popular self-hosted services
+
+version: '3.8'
+
+services:
+  # Jellyfin - Media Server (movies, shows, music)
+  jellyfin:
+    image: jellyfin/jellyfin:latest
+    container_name: homelab-jellyfin
+    volumes:
+      - jellyfin_config:/config
+      - jellyfin_cache:/cache
+    ports:
+      - "8096:8096"
+    environment:
+      - JELLYFIN_PublishedServerUrl=http://localhost:8096
+    restart: unless-stopped
+
+  # Vaultwarden - Password Manager (Bitwarden-compatible)
+  vaultwarden:
+    image: vaultwarden/server:latest-alpine
+    container_name: homelab-vaultwarden
+    ports:
+      - "8080:80"
+    volumes:
+      - vaultwarden_data:/data
+    environment:
+      - DOMAIN=http://localhost:8080
+      - SHOW_PASSWORD_HINT=false
+    restart: unless-stopped
+
+  # Gitea - Git Service (self-hosted GitHub alternative)
+  gitea:
+    image: gitea/gitea:latest
+    container_name: homelab-gitea
+    ports:
+      - "3001:3000"
+      - "2222:22"
+    volumes:
+      - gitea_data:/data
+    environment:
+      - GITEA__DATABASE__DB_TYPE=sqlite3
+    restart: unless-stopped
+
+  # Paperless-ngx - Document Management
+  paperless:
+    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    container_name: homelab-paperless
+    ports:
+      - "8000:8000"
+    volumes:
+      - paperless_data:/usr/src/paperless/data
+      - paperless_media:/usr/src/paperless/media
+    environment:
+      - PAPERLESS_OCR_LANGUAGE=eng
+      - PAPERLESS_SECRET_KEY=changeme123
+    restart: unless-stopped
+
+  # Transmission - Torrent Client
+  transmission:
+    image: linuxserver/transmission:latest
+    container_name: homelab-transmission
+    ports:
+      - "6969:6969"
+      - "6969:6969/udp"
+      - "9091:9091"
+    volumes:
+      - transmission_config:/config
+      - transmission_downloads:/downloads
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=UTC
+    restart: unless-stopped
+
+  # Nextcloud - File Sync & Sharing
+  nextcloud:
+    image: nextcloud:latest
+    container_name: homelab-nextcloud
+    ports:
+      - "8081:80"
+    volumes:
+      - nextcloud_data:/var/www/html
+    environment:
+      - NEXTCLOUD_ADMIN_USER=admin
+      - NEXTCLOUD_ADMIN_PASSWORD=admin123
+    restart: unless-stopped
+
+  # Grafana - Monitoring & Visualization
+  grafana:
+    image: grafana/grafana:latest
+    container_name: homelab-grafana
+    ports:
+      - "3002:3000"
+    volumes:
+      - grafana_storage:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+    restart: unless-stopped
+
+  # Prometheus - Metrics Collection
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: homelab-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    restart: unless-stopped
+
+volumes:
+  jellyfin_config:
+  jellyfin_cache:
+  vaultwarden_data:
+  gitea_data:
+  paperless_data:
+  paperless_media:
+  transmission_config:
+  transmission_downloads:
+  nextcloud_data:
+  grafana_storage:
+  prometheus_data:
+
+networks:
+  default:
+    name: homelab
+    external: false

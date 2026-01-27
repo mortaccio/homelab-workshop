@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Verification - Where to Find Links</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { color: #667eea; }
+        h2 { color: #333; margin-top: 30px; }
+        .step {
+            background: #f9f9f9;
+            padding: 15px;
+            border-left: 4px solid #667eea;
+            margin: 15px 0;
+        }
+        .code {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+            margin: 10px 0;
+        }
+        .success {
+            background: #e8f5e9;
+            border-left-color: #4caf50;
+            color: #2e7d32;
+        }
+        .warning {
+            background: #fff3cd;
+            border-left-color: #ffc107;
+            color: #856404;
+        }
+        .link-box {
+            background: #f0f8ff;
+            border: 2px dashed #667eea;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+        .emoji { font-size: 24px; margin-right: 10px; }
+        button {
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #764ba2;
+        }
+        .copy-btn {
+            background: #4caf50;
+            padding: 5px 10px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📧 Email Verification - Where to Find Your Link</h1>
+        
+        <p>Emails ARE being sent successfully! Here's where to find your verification link:</p>
+
+        <h2>Method 1: Copy-Paste Command (Easiest)</h2>
+        <p>After registering, run this in your terminal:</p>
+        <div class="code">docker logs homelab-ai-code-backend-1 | grep -A5 "VERIFICATION LINK"</div>
+        
+        <p>You'll see output like:</p>
+        <div class="code">🔗 VERIFICATION LINK:
+http://localhost:3000/verify-email?token=550e8400-e29b-41d4-a716-446655440000</div>
+
+        <p class="step success">
+            <strong>✅ Copy that URL and paste it directly into your browser!</strong>
+        </p>
+
+        <h2>Method 2: Watch Logs in Real-Time</h2>
+        <p>Terminal 1 - Start watching logs:</p>
+        <div class="code">docker logs -f homelab-ai-code-backend-1</div>
+
+        <p>Terminal 2 - Register at <a href="http://localhost:3000/register" target="_blank">http://localhost:3000/register</a></p>
+
+        <p>Then look at Terminal 1 - you'll immediately see:</p>
+        <div class="code">📧 VERIFICATION EMAIL SENT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+To: your-email@example.com
+Username: yourname
+
+🔗 VERIFICATION LINK:
+http://localhost:3000/verify-email?token=xxxxx
+
+👁️  VIEW EMAIL (Ethereal Test):
+https://ethereal.email/message/xxxxx
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
+
+        <h2>Complete Flow</h2>
+        <div class="step">
+            <strong>Step 1: Register</strong>
+            <p>Go to <a href="http://localhost:3000/register" target="_blank">http://localhost:3000/register</a> and fill in your details</p>
+        </div>
+
+        <div class="step">
+            <strong>Step 2: Check Logs</strong>
+            <p>Run: <code>docker logs homelab-ai-code-backend-1 | tail -30</code></p>
+            <p>Look for "VERIFICATION LINK:"</p>
+        </div>
+
+        <div class="step success">
+            <strong>Step 3: Copy the Verification Link</strong>
+            <p>Copy the URL that starts with: <code>http://localhost:3000/verify-email?token=...</code></p>
+        </div>
+
+        <div class="step">
+            <strong>Step 4: Paste in Browser</strong>
+            <p>Paste the link into your address bar and press Enter</p>
+        </div>
+
+        <div class="step success">
+            <strong>Step 5: See Success Message</strong>
+            <p>"Email verified successfully! Redirecting to login..."</p>
+        </div>
+
+        <div class="step success">
+            <strong>Step 6: Login</strong>
+            <p>Login with your verified email and password</p>
+        </div>
+
+        <h2>⚠️ Important: Email IS Being Sent!</h2>
+        <p class="step warning">
+            <strong>The email verification system is working correctly.</strong> Emails are being sent via Ethereal Email (a test service). 
+            The verification link is printed to the backend logs, not sent to your inbox.
+        </p>
+
+        <h2>🔍 Verify Everything is Working</h2>
+        <div class="code">
+# Check if backend is running
+docker ps | grep backend
+
+# Check backend logs for recent emails
+docker logs homelab-ai-code-backend-1 | grep "VERIFICATION"
+
+# Try registering and watch logs
+docker logs -f homelab-ai-code-backend-1
+        </div>
+
+        <h2>Still Not Working?</h2>
+        <p>Check these things:</p>
+        <ul>
+            <li>Backend container is running: <code>docker ps</code></li>
+            <li>No errors in logs: <code>docker logs homelab-ai-code-backend-1 | grep -i error</code></li>
+            <li>Frontend is accessible: <code>curl http://localhost:3000</code></li>
+            <li>Backend is responding: <code>curl http://localhost:5000/api/auth/login</code></li>
+        </ul>
+
+        <h2>📚 More Help</h2>
+        <p>See these files for detailed information:</p>
+        <ul>
+            <li><code>EMAIL_VERIFICATION_QUICKSTART.md</code> - Quick start guide</li>
+            <li><code>EMAIL_VERIFICATION.md</code> - Full documentation</li>
+            <li><code>EMAIL_VERIFICATION_COMPLETE.md</code> - Complete reference</li>
+        </ul>
+
+        <h2>🎯 Bottom Line</h2>
+        <div class="link-box">
+            <p><strong>To get your verification link:</strong></p>
+            <code>docker logs homelab-ai-code-backend-1 | grep "VERIFICATION LINK" -A1</code>
+            <p>Then copy and paste the URL into your browser! ✅</p>
+        </div>
+    </div>
+</body>
+</html>
